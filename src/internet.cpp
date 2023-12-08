@@ -1,7 +1,7 @@
 #include "internet.h"
 
-Internet::Internet(const char *ssid, const char *password, const char *ntpServer, const long gmtOffset)
-    : ssid(ssid), password(password), ntpUDP(), timeClient(ntpUDP, ntpServer), gmtOffset(gmtOffset)
+Internet::Internet(const char *ssid, const char *password)
+    : ssid(ssid), password(password)
 {
 }
 
@@ -18,7 +18,8 @@ void Internet::connect()
     if (WiFi.status() != WL_CONNECTED)
     {
         Serial.println("Failed to connect to WiFi");
-        // ESP.restart();
+        ESP.restart();
+        return;
     }
     Serial.println("Connected to WiFi");
 }
@@ -28,21 +29,48 @@ bool Internet::isConnected()
     return WiFi.status() == WL_CONNECTED;
 }
 
-void Internet::setTime(RealTimeClock &realTimeClock)
+String Internet::httpGet(const char *url)
 {
-    // Initialize and synchronize RTC with NTP server
-    timeClient.begin();
-    bool result = timeClient.update();
-    Serial.println(result);
-    if (!result)
+    HTTPClient http;
+    http.begin(url);
+
+    int httpCode = http.GET();
+    String payload = "";
+
+    if (httpCode > 0)
     {
-        Serial.println("Failed to update time from NTP server");
-        // ESP.restart();
+        payload = http.getString();
+        Serial.println("HTTP GET request successful");
     }
     else
     {
-        Serial.println("Updated time from NTP server");
-        time_t epochTime = timeClient.getEpochTime();
-        realTimeClock.setTime(DateTime(epochTime + gmtOffset));
+        Serial.printf("HTTP GET request failed, error code: %d\n", httpCode);
     }
+
+    http.end();
+    return payload;
+}
+
+String Internet::httpPost(const char *url, String data)
+{
+    HTTPClient http;
+    http.begin(url);
+    
+    http.addHeader("Content-Type", "application/json");
+
+    int httpCode = http.POST(data);
+    String payload = "";
+
+    if (httpCode > 0)
+    {
+        payload = http.getString();
+        Serial.println("HTTP POST request successful");
+    }
+    else
+    {
+        Serial.printf("HTTP POST request failed, error code: %d\n", httpCode);
+    }
+
+    http.end();
+    return payload;
 }

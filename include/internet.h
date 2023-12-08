@@ -1,25 +1,22 @@
 #pragma once
 #include <WiFi.h>
-#include <NTPClient.h>
+#include <HTTPClient.h>
 
-#include "real-time-clock.h"
 
 class Internet
 {
 private:
     const char *ssid;
     const char *password;
-    const char *ntpServer;
-    const long gmtOffset;
-
-    WiFiUDP ntpUDP;
-    NTPClient timeClient;
 
 public:
-    Internet(const char *ssid, const char *password, const char *ntpServer, const long gmtOffset);
+    Internet(const char *ssid, const char *password);
 
     void connect();
-    void setTime(RealTimeClock &realTimeClock);
 
     bool isConnected();
+
+    String httpGet(const char *url);
+
+    String httpPost(const char *url, String data);
 };

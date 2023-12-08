@@ -10,7 +10,5 @@ const int SDA_PIN = 21;
 const int SCL_PIN = 22;
 
 // For the Internet
-const char *SSID = "WiFi FB 2.4";
-const char *PASSWORD = "alexander";
-const char *NTP_SERVER = "pool.ntp.org";
-const long GMT_OFFSET = -4 * 3600;
+const char *SSID = "Alex iPhone";
+const char *PASSWORD = "12345678";

@@ -21,4 +21,6 @@ public:
     void update();
 
     void printStatus();
+
+    long getRead();
 };

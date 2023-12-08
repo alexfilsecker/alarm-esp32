@@ -27,3 +27,8 @@ void Scale::printStatus()
     Serial.print(" | Is over threshold: ");
     Serial.println(isOverThreshold);
 }
+
+long Scale::getRead()
+{
+    return read;
+}
