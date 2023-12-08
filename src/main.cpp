@@ -5,6 +5,7 @@
 // #include "buzzer.h"
 // #include "real-time-clock.h"
 #include "internet.h"
+#include <Ticker.h>
 
 const long threshold = 1000000;
 
@@ -12,6 +13,11 @@ Scale scale(DOUT_PIN, CLK_PIN, threshold);
 // Buzzer buzzer(BUZZER_PIN);
 // RealTimeClock realTimeClock(SDA_PIN, SCL_PIN);
 Internet internet(SSID, PASSWORD);
+
+Ticker timer;
+
+
+void timerCallback();
 
 void setup()
 {
@@ -25,9 +31,15 @@ void setup()
         // internet.setTime(realTimeClock);
         Serial.println("Connected to Internet");
     }
+
+    timer.attach(5.0, timerCallback);
 }
 
 void loop()
+{
+}
+
+void timerCallback()
 {
     scale.update();
     const char *url = "http://172.20.10.2:8000/";
