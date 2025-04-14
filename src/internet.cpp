@@ -5,20 +5,36 @@ Internet::Internet(const char *ssid, const char *password, const char *ntpServer
 {
 }
 
+Internet::Internet(const char *ssid, const char *password, const char *ntpServer, const long gmtOffset, int verbose)
+    : ssid(ssid), password(password), ntpUDP(), timeClient(ntpUDP, ntpServer), gmtOffset(gmtOffset), verbose(verbose)
+{
+}
+
+
+
 void Internet::connect()
 {
     WiFi.begin(ssid, password);
     int attempts = 0;
-    while (WiFi.status() != WL_CONNECTED && attempts < 5)
+
+    if (verbose)
+    {
+        Serial.print("Connecting to WiFi: ");
+        Serial.print(ssid);
+        Serial.print(" with password: ");
+        Serial.println(password);
+    }
+
+    while (!isConnected() && attempts < 5)
     {
         delay(1000);
         Serial.println("Connecting to WiFi...");
         attempts++;
     }
-    if (WiFi.status() != WL_CONNECTED)
+    if (!isConnected())
     {
         Serial.println("Failed to connect to WiFi");
-        // ESP.restart();
+        ESP.restart();
     }
     Serial.println("Connected to WiFi");
 }

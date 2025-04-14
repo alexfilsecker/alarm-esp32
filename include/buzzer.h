@@ -1,14 +1,16 @@
 #pragma once
 
+#include "verbose/buzzerVerbose.h"
+
 class Buzzer
 {
 private:
     const int pin;
-    const bool verbose = false; // Set to true for debugging
+    BuzzerVerbose verbose;
 
 public:
     Buzzer(int pin);
-    Buzzer(int pin, int verbose);
+    Buzzer(int pin, bool verboseOn);
 
     void setup();
 

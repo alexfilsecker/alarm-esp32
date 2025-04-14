@@ -3,41 +3,32 @@
 #include "buzzer.h"
 
 Buzzer::Buzzer(int pin)
-    : pin(pin)
+    : pin(pin), verbose(BuzzerVerbose(pin))
 {
 }
 
-Buzzer::Buzzer(int pin, int verbose)
-    : pin(pin), verbose(verbose)
+Buzzer::Buzzer(int pin, bool verboseOn)
+    : pin(pin), verbose(BuzzerVerbose(pin, verboseOn))
 {
 }
+
 
 void Buzzer::setup()
 {
     pinMode(pin, OUTPUT);
-    if (verbose)
-    {
-        Serial.print("Buzzer pin set to: ");
-        Serial.println(pin);
-    }
+    verbose.setup();
 }
 
 void Buzzer::beep()
 {
     digitalWrite(pin, HIGH);
-    if (verbose)
-    {
-        Serial.println("Buzzer beeped!");
-    }
+    verbose.beep();
 }
 
 void Buzzer::beepnt()
 {
     digitalWrite(pin, LOW);
-    if (verbose)
-    {
-        Serial.println("Buzzer beepnt!");
-    }
+    verbose.beepnt();
 }
 
 void Buzzer::loopTest()
