@@ -28,3 +28,12 @@ void Buzzer::loopTest() {
   beepnt();
   delay(1000);
 }
+
+void Buzzer::panicSound() {
+  for (int i = 0; i < 3; i++) {
+    beep();
+    delay(100);
+    beepnt();
+    delay(100);
+  }
+}

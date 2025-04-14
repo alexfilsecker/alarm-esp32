@@ -17,4 +17,6 @@ public:
   void beepnt();
 
   void loopTest();
+
+  void panicSound();
 };

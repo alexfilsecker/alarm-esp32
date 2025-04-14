@@ -2,7 +2,7 @@
 
 #include "constants.h"
 // #include "scale.h"
-// #include "buzzer.h"
+#include "buzzer.h"
 // #include "real-time-clock.h"
 #include "internet.h"
 #include "ntp.h"
@@ -10,7 +10,7 @@
 // const long threshold = 1000000;
 
 // Scale scale(DOUT_PIN, CLK_PIN, threshold);
-// Buzzer buzzer(BUZZER_PIN, true);
+Buzzer buzzer(BUZZER_PIN, true);
 // RealTimeClock realTimeClock(SDA_PIN, SCL_PIN);
 Internet internet(SSID, PASSWORD, true);
 NTP ntp(NTP_SERVER, GMT_OFFSET, true);
@@ -21,12 +21,13 @@ void setup() {
   Serial.println("Starting up...");
 
   // scale.setup();
-  // buzzer.setup();
+  buzzer.setup();
   // realTimeClock.setup();
   internet.connect();
   if (internet.isConnected()) {
     ntp.setup();
   } else {
+    buzzer.panicSound();
     ESP.restart();
   }
 }
