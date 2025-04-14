@@ -1,24 +1,23 @@
 #pragma once
 #include <HX711.h>
 
-class Scale
-{
+class Scale {
 private:
-    HX711 scale;
-    const int doutPin;
-    const int clkPin;
-    const long threshold;
+  HX711 scale;
+  const int doutPin;
+  const int clkPin;
+  const long threshold;
 
-    long read;
+  long read;
 
 public:
-    Scale(int doutPin, int clkPin, long threshold);
+  Scale(int doutPin, int clkPin, long threshold);
 
-    bool isOverThreshold;
+  bool isOverThreshold;
 
-    void setup();
+  void setup();
 
-    void update();
+  void update();
 
-    void printStatus();
+  void printStatus();
 };

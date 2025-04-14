@@ -1,23 +1,22 @@
 #pragma once
 #include <RTClib.h>
-#include <Wire.h>
 #include <SPI.h>
+#include <Wire.h>
 
-class RealTimeClock
-{
+class RealTimeClock {
 private:
-    const int sdaPin;
-    const int sclPin;
-    RTC_DS3231 rtc;
+  const int sdaPin;
+  const int sclPin;
+  RTC_DS3231 rtc;
 
 public:
-    RealTimeClock(int sdaPin, int sclPin);
+  RealTimeClock(int sdaPin, int sclPin);
 
-    void setup();
+  void setup();
 
-    DateTime now();
-    void printTime(DateTime time);
-    void printTime();
+  DateTime now();
+  void printTime(DateTime time);
+  void printTime();
 
-    void setTime(DateTime time);
+  void setTime(DateTime time);
 };

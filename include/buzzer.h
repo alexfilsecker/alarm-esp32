@@ -2,20 +2,19 @@
 
 #include "verbose/buzzerVerbose.h"
 
-class Buzzer
-{
+class Buzzer {
 private:
-    const int pin;
-    BuzzerVerbose verbose;
+  const int pin;
+  BuzzerVerbose verbose;
 
 public:
-    Buzzer(int pin);
-    Buzzer(int pin, bool verboseOn);
+  Buzzer(int pin);
+  Buzzer(int pin, bool verboseOn);
 
-    void setup();
+  void setup();
 
-    void beep();
-    void beepnt();
+  void beep();
+  void beepnt();
 
-    void loopTest();
+  void loopTest();
 };
