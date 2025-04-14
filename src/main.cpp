@@ -4,28 +4,31 @@
 // #include "scale.h"
 // #include "buzzer.h"
 // #include "real-time-clock.h"
-// #include "internet.h"
+#include "internet.h"
+#include "ntp.h"
 
-const long threshold = 1000000;
+// const long threshold = 1000000;
 
 // Scale scale(DOUT_PIN, CLK_PIN, threshold);
 // Buzzer buzzer(BUZZER_PIN, true);
 // RealTimeClock realTimeClock(SDA_PIN, SCL_PIN);
-// Internet internet(SSID, PASSWORD, NTP_SERVER, GMT_OFFSET);
+Internet internet(SSID, PASSWORD, true);
+NTP ntp(NTP_SERVER, GMT_OFFSET, true);
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("Starting up...");
   delay(1000);
+  Serial.println("Starting up...");
 
   // scale.setup();
   // buzzer.setup();
   // realTimeClock.setup();
-  // internet.connect();
-  // if (internet.isConnected())
-  // {
-  //     internet.setTime(realTimeClock);
-  // }
+  internet.connect();
+  if (internet.isConnected()) {
+    ntp.setup();
+  } else {
+    ESP.restart();
+  }
 }
 
 void loop() {
@@ -34,7 +37,8 @@ void loop() {
 
   // scale.update();
   // scale.printStatus();
-  delay(200);
+  delay(1000);
+  ntp.printTime();
 
   // realTimeClock.printTime();
 
