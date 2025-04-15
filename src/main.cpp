@@ -4,6 +4,7 @@
 // #include "Scale.h"
 #include "Buzzer.h"
 // #include "RealTimeClock.h"
+#include "Alarm.h"
 #include "Internet.h"
 #include "NTP.h"
 #include "WebSocket.h"
@@ -21,6 +22,8 @@ void setup() {
   Serial.begin(9600);
   delay(1000);
   Serial.println("Starting up...");
+
+  Alarm alarm(true);
 
   // scale.setup();
   buzzer.setup();
