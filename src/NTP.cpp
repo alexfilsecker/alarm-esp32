@@ -1,4 +1,4 @@
-#include "ntp.h"
+#include "NTP.h"
 
 NTP::NTP(const char *ntpServer, const long gmtOffset)
     : ntpServer(ntpServer), gmtOffset(gmtOffset), ntpUDP(),

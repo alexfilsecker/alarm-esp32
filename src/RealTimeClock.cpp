@@ -1,4 +1,4 @@
-#include "real-time-clock.h"
+#include "RealTimeClock.h"
 
 RealTimeClock::RealTimeClock(int sdaPin, int sclPin)
     : sdaPin(sdaPin), sclPin(sclPin) {}

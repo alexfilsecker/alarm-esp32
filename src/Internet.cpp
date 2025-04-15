@@ -1,4 +1,4 @@
-#include "internet.h"
+#include "Internet.h"
 
 Internet::Internet(const char *ssid, const char *password)
     : ssid(ssid), password(password) {};

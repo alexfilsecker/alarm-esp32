@@ -1,12 +1,12 @@
 #include <Arduino.h>
 
-#include "constants.h"
-// #include "scale.h"
-#include "buzzer.h"
-// #include "real-time-clock.h"
-#include "internet.h"
-// #include "ntp.h"
-#include "web-socket.h"
+#include "Constants.h"
+// #include "Scale.h"
+#include "Buzzer.h"
+// #include "RealTimeClock.h"
+#include "Internet.h"
+// #include "NTP.h"
+#include "WebSocket.h"
 
 // const long threshold = 1000000;
 
