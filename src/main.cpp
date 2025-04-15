@@ -5,7 +5,8 @@
 #include "buzzer.h"
 // #include "real-time-clock.h"
 #include "internet.h"
-#include "ntp.h"
+// #include "ntp.h"
+#include "web-socket.h"
 
 // const long threshold = 1000000;
 
@@ -13,7 +14,8 @@
 Buzzer buzzer(BUZZER_PIN, true);
 // RealTimeClock realTimeClock(SDA_PIN, SCL_PIN);
 Internet internet(SSID, PASSWORD, true);
-NTP ntp(NTP_SERVER, GMT_OFFSET, true);
+// NTP ntp(NTP_SERVER, GMT_OFFSET, true);
+WebSocket webSocket(WEB_SOCKET_IP, WEB_SOCKET_PORT, true);
 
 void setup() {
   Serial.begin(9600);
@@ -24,22 +26,22 @@ void setup() {
   buzzer.setup();
   // realTimeClock.setup();
   internet.connect();
-  if (internet.isConnected()) {
-    ntp.setup();
-  } else {
+  if (!internet.isConnected()) {
     buzzer.panicSound();
     ESP.restart();
+    return;
   }
+  // ntp.setup();
+  webSocket.setup();
 }
 
 void loop() {
+  webSocket.loop();
 
   // buzzer.loopTest();
 
   // scale.update();
   // scale.printStatus();
-  delay(1000);
-  ntp.printTime();
 
   // realTimeClock.printTime();
 
