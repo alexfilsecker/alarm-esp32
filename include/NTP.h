@@ -6,7 +6,6 @@
 class NTP {
 private:
   const char *ntpServer;
-  const long gmtOffset;
 
   const time_t epochTime;
 
@@ -21,6 +20,7 @@ public:
 
   void setup();
 
+  void setGMTOffset(const int8_t gmtHoursOffset);
   void printTime();
 
   void setTime(RealTimeClock &realTimeClock);

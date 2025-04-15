@@ -1,117 +1,81 @@
 #include "WebSocket.h"
 #include "PayloadUtils.h"
+#include <ArduinoJson.h>
 
-WebSocket::WebSocket(const char *ip, const int port) : ip(ip), port(port) {}
-WebSocket::WebSocket(const char *ip, const int port, const bool verbose)
-    : ip(ip), port(port), verbose(verbose) {}
+WebSocket::WebSocket(const char *ip, const int port, NTP *ntp)
+    : ip(ip), port(port), ntp(ntp) {}
 
-void WebSocket::errorEvent(uint8_t *payload, size_t length) {
-  if (verbose) {
-    Serial.printf("Error: %s\n", decodeASCII(payload, length));
+WebSocket::WebSocket(const char *ip, const int port, NTP *ntp,
+                     const bool verbose)
+    : ip(ip), port(port), ntp(ntp), verbose(verbose) {}
+
+void WebSocket::verboseEvent(WStype_t type, uint8_t *payload, size_t length) {
+  const char *typeStr = verboseWStype[type];
+  Serial.print("\nEvent: ");
+  Serial.print(typeStr);
+  Serial.print(", Payload length: ");
+  Serial.println(length);
+  if (length > 0) {
+    Serial.print("ASCII Decoded payload: ");
+    Serial.println(decodeASCII(payload, length));
+    // hexdump(payload, length);
   }
-};
+}
 
-void WebSocket::disconnectedEvent(uint8_t *payload, size_t length) {
-  if (verbose) {
-    Serial.println("Socket Disconnected");
+void WebSocket::textEvent(uint8_t *payload) {
+  String recievedJsonString = String((char *)payload);
+  JsonDocument doc;
+  DeserializationError error = deserializeJson(doc, recievedJsonString);
+
+  if (error) {
+    Serial.print("JSON deserialization failed: ");
+    Serial.println(error.c_str());
+    return;
   }
-};
 
-void WebSocket::connectedEvent(uint8_t *payload, size_t length) {
+  const char *event = doc["event"];
+
   if (verbose) {
-    Serial.printf("Socket connected to url: \"%s\"\n", payload);
+    Serial.printf("Event: %s\n", event);
   }
-};
 
-void WebSocket::textEvent(uint8_t *payload, size_t length) {
-  if (verbose) {
-    Serial.printf("Text: %s\n", payload);
+  // Initialize with a default value
+  const std::string strEvent = std::string(event);
+  if (!eventMap.count(strEvent)) {
+    Serial.println("ERROR Received unknown event");
+    return;
   }
-};
 
-void WebSocket::binEvent(uint8_t *payload, size_t length) {
-  if (verbose) {
-    Serial.printf("Bin: %s\n", payload);
+  const ServerEvent serverEvent = eventMap[strEvent];
+
+  switch (serverEvent) {
+  case ServerEvent::GMT_OFFSET: {
+    const int8_t offset = doc["offset"];
+    ntp->setGMTOffset(offset);
+    break;
   }
-};
-
-void WebSocket::fragmentTextStartEvent(uint8_t *payload, size_t length) {
-  if (verbose) {
-    Serial.printf("FragmentTextStart: %s\n", payload);
   }
-};
-
-void WebSocket::fragmentBinStartEvent(uint8_t *payload, size_t length) {
-  if (verbose) {
-    Serial.printf("FragmentBinStart: %s\n", payload);
-  }
-};
-
-void WebSocket::fragmentEvent(uint8_t *payload, size_t length) {
-  if (verbose) {
-    Serial.printf("Fragment: %s\n", payload);
-  }
-};
-
-void WebSocket::fragmentFinEvent(uint8_t *payload, size_t length) {
-  if (verbose) {
-    Serial.printf("FragmentFin: %s\n", payload);
-  }
-};
-
-void WebSocket::pingEvent(uint8_t *payload, size_t length) {
-  if (verbose) {
-    Serial.print("Ping ");
-    Serial.println(length);
-
-    if (length > 0) {
-      Serial.println(*payload);
-      hexdump(payload, length);
-      Serial.println(decodeASCII(payload, length));
-    }
-  }
-};
-
-void WebSocket::pongEvent(uint8_t *payload, size_t length) {
-  if (verbose) {
-    Serial.printf("Pong: %s\n", payload);
-  }
-};
+}
 
 void WebSocket::webSocketEvent(WStype_t type, uint8_t *payload, size_t length) {
+  if (verbose) {
+    verboseEvent(type, payload, length);
+  }
+
   switch (type) {
-  case WStype_ERROR:
-    errorEvent(payload, length);
-    break;
-  case WStype_DISCONNECTED:
-    disconnectedEvent(payload, length);
-    break;
-  case WStype_CONNECTED:
-    connectedEvent(payload, length);
-    break;
   case WStype_TEXT:
-    textEvent(payload, length);
+    textEvent(payload);
     break;
+  case WStype_ERROR:
+  case WStype_DISCONNECTED:
+  case WStype_CONNECTED:
   case WStype_BIN:
-    binEvent(payload, length);
-    break;
   case WStype_FRAGMENT_TEXT_START:
-    fragmentTextStartEvent(payload, length);
-    break;
   case WStype_FRAGMENT_BIN_START:
-    fragmentBinStartEvent(payload, length);
-    break;
   case WStype_FRAGMENT:
-    fragmentEvent(payload, length);
-    break;
   case WStype_FRAGMENT_FIN:
-    fragmentFinEvent(payload, length);
-    break;
   case WStype_PING:
-    pingEvent(payload, length);
-    break;
   case WStype_PONG:
-    pongEvent(payload, length);
     break;
   }
 }

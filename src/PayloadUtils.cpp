@@ -22,7 +22,7 @@ char *decodeASCII(const uint8_t *payload, size_t length) {
 
 void hexdump(const void *mem, uint32_t len, uint8_t cols) {
   const uint8_t *src = (const uint8_t *)mem;
-  Serial.printf("\n[HEXDUMP] Address: 0x%08tX len: 0x%X (%d)", (ptrdiff_t)src,
+  Serial.printf("[HEXDUMP] Address: 0x%08tX len: 0x%X (%d)", (ptrdiff_t)src,
                 len, len);
   for (uint32_t i = 0; i < len; i++) {
     if (i % cols == 0) {
