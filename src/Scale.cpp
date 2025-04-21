@@ -32,10 +32,11 @@ void printWithThousandsSeparator(long num) {
 }
 
 void Scale::printStatus() {
-  Serial.print("Read: ");
-  printWithThousandsSeparator(read);
-  Serial.print(" | Threshold: ");
-  Serial.print(threshold);
-  Serial.print(" | Is over threshold: ");
-  Serial.println(isOverThreshold);
+  // Serial.print("Read: ");
+  // printWithThousandsSeparator(read);
+  Serial.println(read);
+  // Serial.print(" | Threshold: ");
+  // Serial.print(threshold);
+  // Serial.print(" | Is over threshold: ");
+  // Serial.println(isOverThreshold);
 }
