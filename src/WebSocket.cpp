@@ -1,13 +1,55 @@
 #include "WebSocket.h"
 #include "PayloadUtils.h"
-#include <ArduinoJson.h>
 
-WebSocket::WebSocket(const char *ip, const int port, NTP *ntp)
-    : ip(ip), port(port), ntp(ntp) {}
+// Public
+WebSocket::WebSocket(const char *ip, const int port, NTP *ntp, Alarm *alarm)
+    : ip(ip), port(port), alarm(alarm), ntp(ntp) {}
 
-WebSocket::WebSocket(const char *ip, const int port, NTP *ntp,
+WebSocket::WebSocket(const char *ip, const int port, NTP *ntp, Alarm *alarm,
                      const bool verbose)
-    : ip(ip), port(port), ntp(ntp), verbose(verbose) {}
+    : ip(ip), port(port), alarm(alarm), ntp(ntp), verbose(verbose) {}
+
+void WebSocket::setup() {
+  if (verbose) {
+    Serial.println("setting up websocket");
+  }
+
+  webSocket.setExtraHeaders("X-User:ESP32");
+  webSocket.begin(ip, port);
+  webSocket.onEvent([this](WStype_t type, uint8_t *payload, size_t length) {
+    this->webSocketEvent(type, payload, length);
+  });
+
+  if (verbose) {
+    Serial.println("WebSocket setted up");
+  }
+}
+
+void WebSocket::loop() { webSocket.loop(); }
+
+// Private
+void WebSocket::webSocketEvent(WStype_t type, uint8_t *payload, size_t length) {
+  if (verbose) {
+    verboseEvent(type, payload, length);
+  }
+
+  switch (type) {
+  case WStype_TEXT:
+    textEvent(payload);
+    break;
+  case WStype_ERROR:
+  case WStype_DISCONNECTED:
+  case WStype_CONNECTED:
+  case WStype_BIN:
+  case WStype_FRAGMENT_TEXT_START:
+  case WStype_FRAGMENT_BIN_START:
+  case WStype_FRAGMENT:
+  case WStype_FRAGMENT_FIN:
+  case WStype_PING:
+  case WStype_PONG:
+    break;
+  }
+}
 
 void WebSocket::verboseEvent(WStype_t type, uint8_t *payload, size_t length) {
   const char *typeStr = verboseWStype[type];
@@ -49,50 +91,30 @@ void WebSocket::textEvent(uint8_t *payload) {
   const ServerEvent serverEvent = eventMap[strEvent];
 
   switch (serverEvent) {
-  case ServerEvent::GMT_OFFSET: {
-    const int8_t offset = doc["offset"];
-    ntp->setGMTOffset(offset);
+  case ServerEvent::GMT_OFFSET:
+    recieveGmtOffset(doc);
     break;
-  }
-  }
-}
 
-void WebSocket::webSocketEvent(WStype_t type, uint8_t *payload, size_t length) {
-  if (verbose) {
-    verboseEvent(type, payload, length);
-  }
-
-  switch (type) {
-  case WStype_TEXT:
-    textEvent(payload);
-    break;
-  case WStype_ERROR:
-  case WStype_DISCONNECTED:
-  case WStype_CONNECTED:
-  case WStype_BIN:
-  case WStype_FRAGMENT_TEXT_START:
-  case WStype_FRAGMENT_BIN_START:
-  case WStype_FRAGMENT:
-  case WStype_FRAGMENT_FIN:
-  case WStype_PING:
-  case WStype_PONG:
+  case ServerEvent::ALARMS:
+    recieveAlarms(doc);
     break;
   }
 }
 
-void WebSocket::setup() {
-  if (verbose) {
-    Serial.println("setting up websocket");
+void WebSocket::recieveAlarms(JsonDocument doc) {
+  JsonArray alarmArray = doc["alarms"];
+  uint8_t count = 0;
+  for (JsonVariant item : alarmArray) {
+    const uint16_t begin = item[0];
+    const uint16_t end = item[1];
+    alarm->setAlarm(Days(count), DayAlarm{begin, end});
+    count++;
   }
-
-  webSocket.begin(ip, port);
-  webSocket.onEvent([this](WStype_t type, uint8_t *payload, size_t length) {
-    this->webSocketEvent(type, payload, length);
-  });
-
-  if (verbose) {
-    Serial.println("WebSocket setted up");
-  }
+  webSocket.sendTXT("Alarms setted up");
 }
 
-void WebSocket::loop() { webSocket.loop(); }
+void WebSocket::recieveGmtOffset(JsonDocument doc) {
+  const int8_t offset = doc["offset"];
+  ntp->setGMTOffset(offset);
+  webSocket.sendTXT("GMT_OFFSET updated");
+}

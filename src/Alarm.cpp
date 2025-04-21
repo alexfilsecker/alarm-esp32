@@ -5,6 +5,9 @@
 
 std::string intToStr(const int number) {
   std::stringstream ss;
+  if (number < 10) {
+    ss << "0";
+  }
   ss << number;
   return ss.str();
 }
@@ -27,8 +30,6 @@ char *DayAlarm::toStr(BeginOrEnd beginOrEnd) {
   char *cstr = new char[timeString.length() + 1];
   std::strcpy(cstr, timeString.c_str());
 
-  Serial.println(cstr);
-
   return cstr;
 }
 
@@ -42,7 +43,7 @@ void Alarm::setAlarm(const Days day, DayAlarm dayAlarm) {
     const std::string dayStr = daysStrMap[day];
     char *beginTime = dayAlarm.toStr(BeginOrEnd::BEGGINING);
     char *endTime = dayAlarm.toStr(BeginOrEnd::ENDING);
-    Serial.printf("Alarm on %s set from %s to %s", dayStr.c_str(), beginTime,
+    Serial.printf("Alarm on %s set from %s to %s\n", dayStr.c_str(), beginTime,
                   endTime);
   }
 }
