@@ -1,16 +1,14 @@
 #include "NTP.h"
 
 NTP::NTP(const char *ntpServer, const long gmtOffset)
-    : ntpServer(ntpServer), ntpUDP(), timeClient(ntpUDP, ntpServer),
-      epochTime(0) {}
+    : ntpServer(ntpServer), ntpUDP(), timeClient(ntpUDP, ntpServer) {}
 
 NTP::NTP(const char *ntpServer, const long gmtOffset, const bool verbose)
     : ntpServer(ntpServer), ntpUDP(), timeClient(ntpUDP, ntpServer, gmtOffset),
-      verbose(verbose), epochTime(0) {}
+      verbose(verbose) {}
 
-void NTP::setGMTOffset(const int8_t gmtHoursOffset) {
-  const int16_t gmtOffset = gmtHoursOffset * 3600;
-  timeClient.setTimeOffset(gmtOffset);
+void NTP::setGMTOffset(const int16_t gmtOffset) {
+  this->gmtOffset = gmtOffset;
   if (verbose) {
     Serial.printf("Setting offset to %d", gmtOffset);
   }
@@ -22,6 +20,8 @@ void NTP::setup() {
   }
 
   bool result = timeClient.update();
+  lastSyncEpochUTC = timeClient.getEpochTime();
+  lastSyncMillis = millis();
 
   if (!result) {
     if (verbose) {
@@ -35,9 +35,31 @@ void NTP::setup() {
   }
 }
 
+void NTP::update() {
+  if (millis() - lastSyncMillis <= 60000) {
+    return;
+  }
+
+  if (!timeClient.update()) {
+    Serial.println("NTP sync failed");
+    return;
+  }
+
+  lastSyncEpochUTC = timeClient.getEpochTime();
+  lastSyncMillis = millis();
+  Serial.println("NTP sync successfull");
+}
+
 void NTP::printTime() {
+  timeClient.setTimeOffset(gmtOffset);
   const String time = timeClient.getFormattedTime();
+  timeClient.setTimeOffset(0);
   Serial.println(time);
+}
+
+unsigned long long NTP::getMillisUTCEpochTime() {
+  return (unsigned long long)lastSyncEpochUTC * 1000 +
+         (millis() - lastSyncMillis);
 }
 
 // void NTP::setTime(RealTimeClock &realTimeClock) { // Initialize and

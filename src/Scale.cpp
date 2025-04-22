@@ -11,6 +11,13 @@ void Scale::setup() { scale.begin(doutPin, clkPin); }
 void Scale::update() {
   read = scale.read();
   isOverThreshold = read > threshold;
+  updatedAt = 0;
+}
+
+void Scale::update(time_t updatedAt) {
+  read = scale.read();
+  isOverThreshold = read > threshold;
+  updatedAt = updatedAt;
 }
 
 void printWithThousandsSeparator(long num) {

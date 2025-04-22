@@ -6,6 +6,7 @@
 
 #include "Alarm.h"
 #include "NTP.h"
+#include "Scale.h"
 
 enum class ServerEvent {
   GMT_OFFSET,
@@ -21,6 +22,7 @@ private:
 
   NTP *ntp;
   Alarm *alarm;
+  Scale *scale;
 
   const bool verbose = false;
 
@@ -45,6 +47,8 @@ private:
   void recieveGmtOffset(JsonDocument doc);
   void recieveAlarms(JsonDocument doc);
 
+  void sendVoidEvent(const char *event);
+
   std::map<std::string, ServerEvent> eventMap = {
       {"GMTOffset", ServerEvent::GMT_OFFSET}, {"Alarms", ServerEvent::ALARMS}};
 
@@ -55,4 +59,6 @@ public:
 
   void setup();
   void loop();
+
+  void sendScaleRead(const long read, const unsigned long long millisEpochTime);
 };

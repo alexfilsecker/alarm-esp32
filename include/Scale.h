@@ -9,6 +9,7 @@ private:
   const long threshold;
 
   long read;
+  time_t updatedAt;
 
 public:
   Scale(int doutPin, int clkPin, long threshold);
@@ -18,6 +19,9 @@ public:
   void setup();
 
   void update();
+  void update(time_t updatedAt);
+
+  long getRead() { return read; };
 
   void printStatus();
 };

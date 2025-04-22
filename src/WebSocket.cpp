@@ -27,6 +27,17 @@ void WebSocket::setup() {
 
 void WebSocket::loop() { webSocket.loop(); }
 
+void WebSocket::sendScaleRead(const long read,
+                              const unsigned long long millisEpochTime) {
+  JsonDocument doc;
+  doc["event"] = "SendRead";
+  doc["data"]["read"] = read;
+  doc["data"]["millisEpochTime"] = millisEpochTime;
+  String message;
+  serializeJson(doc, message);
+  webSocket.sendTXT(message);
+}
+
 // Private
 void WebSocket::webSocketEvent(WStype_t type, uint8_t *payload, size_t length) {
   if (verbose) {
@@ -101,6 +112,14 @@ void WebSocket::textEvent(uint8_t *payload) {
   }
 }
 
+void WebSocket::sendVoidEvent(const char *event) {
+  JsonDocument doc;
+  doc["event"] = event;
+  String stringToSend;
+  serializeJson(doc, stringToSend);
+  webSocket.sendTXT(stringToSend);
+}
+
 void WebSocket::recieveAlarms(JsonDocument doc) {
   JsonArray alarmArray = doc["alarms"];
   uint8_t count = 0;
@@ -110,11 +129,11 @@ void WebSocket::recieveAlarms(JsonDocument doc) {
     alarm->setAlarm(Days(count), DayAlarm{begin, end});
     count++;
   }
-  webSocket.sendTXT("Alarms setted up");
+  sendVoidEvent("AlarmsUpdated");
 }
 
 void WebSocket::recieveGmtOffset(JsonDocument doc) {
-  const int8_t offset = doc["offset"];
+  const int16_t offset = doc["offset"];
   ntp->setGMTOffset(offset);
-  webSocket.sendTXT("GMT_OFFSET updated");
+  sendVoidEvent("GmtOffsetUpdated");
 }

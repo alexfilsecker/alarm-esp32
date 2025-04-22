@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 #include "Constants.h"
-// #include "Scale.h"
+#include "Scale.h"
 // #include "RealTimeClock.h"
 #include "Alarm.h"
 #include "Buzzer.h"
@@ -9,15 +9,17 @@
 #include "NTP.h"
 #include "WebSocket.h"
 
-// const long threshold = 1000000;
+const long threshold = 1000000;
 
-// Scale scale(DOUT_PIN, CLK_PIN, threshold);
+Scale scale(DOUT_PIN, CLK_PIN, threshold);
 // RealTimeClock realTimeClock(SDA_PIN, SCL_PIN);
 Buzzer buzzer(BUZZER_PIN, true);
 Alarm alarms(true);
 Internet internet(SSID, PASSWORD, true);
 NTP ntp(NTP_SERVER, GMT_OFFSET, true);
 WebSocket webSocket(WEB_SOCKET_IP, WEB_SOCKET_PORT, &ntp, &alarms, true);
+
+time_t lastSendRead = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -29,7 +31,7 @@ void setup() {
   Serial.println("  * ESP32 *");
   Serial.println("  *********\n\n");
 
-  // scale.setup();
+  scale.setup();
   // realTimeClock.setup();
   buzzer.setup();
   internet.connect();
@@ -48,8 +50,16 @@ void loop() {
 
   // buzzer.loopTest();
 
-  // scale.update();
-  // scale.printStatus();
+  const unsigned long long millisEpochTime = ntp.getMillisUTCEpochTime();
+  scale.update();
+  const long read = scale.getRead();
+  ntp.update();
+
+  if (millis() - lastSendRead > 1000) {
+    webSocket.sendScaleRead(read, millisEpochTime);
+    lastSendRead = millis();
+  }
+
   // realTimeClock.printTime();
 
   // if (scale.isOverThreshold)
