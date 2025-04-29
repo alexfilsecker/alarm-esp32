@@ -19,6 +19,8 @@ public:
   DayAlarm(uint16_t begin, uint16_t end) : beginMin(begin), endMin(end) {}
 
   char *toStr(BeginOrEnd beginOrEnd);
+
+  bool isActive(uint16_t currentMinutes);
 };
 
 enum class Days {
@@ -50,4 +52,6 @@ public:
 
   void setAlarm(const Days day, const DayAlarm dayAlarm);
   void setAlarms(DayAlarm dayAlarms[7]);
+
+  bool isActive(uint8_t dayIndex, uint16_t currentMinutes);
 };

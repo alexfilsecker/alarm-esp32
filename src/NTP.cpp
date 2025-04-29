@@ -62,6 +62,14 @@ unsigned long long NTP::getMillisUTCEpochTime() {
          (millis() - lastSyncMillis);
 }
 
+AlarmUsefulInfo NTP::getAlarmUsefulInfo() {
+  timeClient.setTimeOffset(gmtOffset);
+  const uint16_t minutes = timeClient.getHours() * 60 + timeClient.getMinutes();
+  const uint8_t dayIndex = timeClient.getDay() - 1;
+  timeClient.setTimeOffset(0);
+  return AlarmUsefulInfo{minutes, dayIndex};
+}
+
 // void NTP::setTime(RealTimeClock &realTimeClock) { // Initialize and
 // synchronize
 //                                                   // RTC with NTP server

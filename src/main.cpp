@@ -11,7 +11,7 @@
 const long threshold = 1000000;
 
 Scale scale(DOUT_PIN, CLK_PIN, threshold);
-Buzzer buzzer(BUZZER_PIN, true);
+Buzzer buzzer(BUZZER_PIN);
 Alarm alarms(true);
 Internet internet(SSID, PASSWORD, true);
 NTP ntp(NTP_SERVER, GMT_OFFSET, true);
@@ -30,6 +30,7 @@ void setup() {
   Serial.println("  *********\n\n");
 
   scale.setup();
+
   buzzer.setup();
   internet.connect();
   if (!internet.isConnected()) {
@@ -37,7 +38,6 @@ void setup() {
     ESP.restart();
     return;
   }
-
   ntp.setup();
   webSocket.setup();
 }
@@ -48,8 +48,15 @@ void loop() {
   scale.update();
   const long read = scale.getRead();
   ntp.update();
-  if (millis() - lastSendRead > 1000) {
-    webSocket.sendScaleRead(read, millisEpochTime);
-    lastSendRead = millis();
+  webSocket.sendScaleRead(read, millisEpochTime);
+
+  AlarmUsefulInfo info = ntp.getAlarmUsefulInfo();
+  bool alarmActive = alarms.isActive(info.dayIndex, info.localMinutes);
+  bool scaleActive = scale.isOverThreshold;
+
+  if (alarmActive & scaleActive) {
+    buzzer.beep();
+  } else {
+    buzzer.beepnt();
   }
 }

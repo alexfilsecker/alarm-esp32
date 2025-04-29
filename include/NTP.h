@@ -3,6 +3,11 @@
 #include <NTPClient.h>
 #include <WiFi.h>
 
+struct AlarmUsefulInfo {
+  uint16_t localMinutes;
+  uint8_t dayIndex;
+};
+
 class NTP {
 private:
   const char *ntpServer;
@@ -29,4 +34,6 @@ public:
   void setTime(RealTimeClock &realTimeClock);
 
   unsigned long long getMillisUTCEpochTime();
+
+  AlarmUsefulInfo getAlarmUsefulInfo();
 };

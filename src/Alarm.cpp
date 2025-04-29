@@ -33,6 +33,10 @@ char *DayAlarm::toStr(BeginOrEnd beginOrEnd) {
   return cstr;
 }
 
+bool DayAlarm::isActive(uint16_t currentMinutes) {
+  return currentMinutes >= beginMin & currentMinutes < endMin;
+}
+
 Alarm::Alarm() {};
 
 Alarm::Alarm(bool verbose) : verbose(verbose) {};
@@ -52,4 +56,9 @@ void Alarm::setAlarms(DayAlarm dayAlarms[7]) {
   for (uint8_t i = 0; i < 7; i++) {
     setAlarm(Days(i), dayAlarms[i]);
   }
+}
+
+bool Alarm::isActive(uint8_t dayIndex, uint16_t currentMinutes) {
+  DayAlarm currentAlarm = alarms[dayIndex];
+  return currentAlarm.isActive(currentMinutes);
 }
