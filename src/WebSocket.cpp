@@ -14,8 +14,7 @@ void WebSocket::setup() {
     Serial.println("setting up websocket");
   }
 
-  webSocket.setExtraHeaders("X-User:ESP32");
-  webSocket.begin(ip, port);
+  webSocket.begin(ip, port, "/?client=ESP32");
   webSocket.onEvent([this](WStype_t type, uint8_t *payload, size_t length) {
     this->webSocketEvent(type, payload, length);
   });
