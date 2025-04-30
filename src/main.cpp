@@ -54,9 +54,13 @@ void loop() {
   bool alarmActive = alarms.isActive(info.dayIndex, info.localMinutes);
   bool scaleActive = scale.isOverThreshold;
 
-  if (alarmActive & scaleActive) {
+  if (webSocket.forceBeep) {
     buzzer.beep();
   } else {
-    buzzer.beepnt();
+    if (alarmActive & scaleActive) {
+      buzzer.beep();
+    } else {
+      buzzer.beepnt();
+    }
   }
 }

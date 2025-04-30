@@ -11,6 +11,7 @@
 enum class ServerEvent {
   GMT_OFFSET,
   ALARMS,
+  BEEP,
 };
 
 class WebSocket {
@@ -46,11 +47,14 @@ private:
 
   void recieveGmtOffset(JsonDocument doc);
   void recieveAlarms(JsonDocument doc);
+  void recieveBeep(JsonDocument doc);
 
   void sendVoidEvent(const char *event);
 
   std::map<std::string, ServerEvent> eventMap = {
-      {"GMTOffset", ServerEvent::GMT_OFFSET}, {"Alarms", ServerEvent::ALARMS}};
+      {"GMTOffset", ServerEvent::GMT_OFFSET},
+      {"Alarms", ServerEvent::ALARMS},
+      {"BEEP", ServerEvent::BEEP}};
 
 public:
   WebSocket(const char *ip, const int port, NTP *ntp, Alarm *alarm);
@@ -61,4 +65,6 @@ public:
   void loop();
 
   void sendScaleRead(const long read, const unsigned long long millisEpochTime);
+
+  bool forceBeep = false;
 };

@@ -108,6 +108,10 @@ void WebSocket::textEvent(uint8_t *payload) {
   case ServerEvent::ALARMS:
     recieveAlarms(doc);
     break;
+
+  case ServerEvent::BEEP:
+    recieveBeep(doc);
+    break;
   }
 }
 
@@ -136,4 +140,9 @@ void WebSocket::recieveGmtOffset(JsonDocument doc) {
   const int16_t offset = doc["offset"];
   ntp->setGMTOffset(offset);
   sendVoidEvent("GmtOffsetUpdated");
+}
+
+void WebSocket::recieveBeep(JsonDocument doc) {
+  const bool value = doc["value"];
+  forceBeep = value;
 }
