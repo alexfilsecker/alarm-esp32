@@ -34,6 +34,8 @@ char *DayAlarm::toStr(BeginOrEnd beginOrEnd) {
 }
 
 bool DayAlarm::isActive(uint16_t currentMinutes) {
+  if (!enabled)
+    return false;
   return currentMinutes >= beginMin & currentMinutes < endMin;
 }
 
@@ -47,8 +49,16 @@ void Alarm::setAlarm(const Days day, DayAlarm dayAlarm) {
     const std::string dayStr = daysStrMap[day];
     char *beginTime = dayAlarm.toStr(BeginOrEnd::BEGGINING);
     char *endTime = dayAlarm.toStr(BeginOrEnd::ENDING);
-    Serial.printf("Alarm on %s set from %s to %s\n", dayStr.c_str(), beginTime,
-                  endTime);
+
+    const char *enabledStr;
+    if (dayAlarm.enabled) {
+      enabledStr = "";
+    } else {
+      enabledStr = "not ";
+    }
+
+    Serial.printf("Alarm %senabled on %s set from %s to %s\n", enabledStr,
+                  dayStr.c_str(), beginTime, endTime);
   }
 }
 

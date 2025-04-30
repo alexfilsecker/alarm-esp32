@@ -125,7 +125,8 @@ void WebSocket::recieveAlarms(JsonDocument doc) {
   for (JsonVariant item : alarmArray) {
     const uint16_t begin = item[0];
     const uint16_t end = item[1];
-    alarm->setAlarm(Days(count), DayAlarm{begin, end});
+    const bool enabled = item[2];
+    alarm->setAlarm(Days(count), DayAlarm{begin, end, enabled});
     count++;
   }
   sendVoidEvent("AlarmsUpdated");

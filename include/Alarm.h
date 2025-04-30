@@ -15,8 +15,10 @@ private:
   uint16_t endMin = 0;
 
 public:
-  DayAlarm() : beginMin(0), endMin(0) {}
-  DayAlarm(uint16_t begin, uint16_t end) : beginMin(begin), endMin(end) {}
+  bool enabled = false;
+  DayAlarm() : beginMin(0), endMin(0), enabled(false) {}
+  DayAlarm(uint16_t begin, uint16_t end, bool enabled)
+      : beginMin(begin), endMin(end), enabled(enabled) {}
 
   char *toStr(BeginOrEnd beginOrEnd);
 
