@@ -34,8 +34,10 @@ char *DayAlarm::toStr(BeginOrEnd beginOrEnd) {
 }
 
 bool DayAlarm::isActive(uint16_t currentMinutes) {
-  if (!enabled)
+  if (!enabled) {
     return false;
+  }
+
   return currentMinutes >= beginMin & currentMinutes < endMin;
 }
 
