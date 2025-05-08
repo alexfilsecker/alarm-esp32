@@ -1,6 +1,7 @@
 // For the scale
 const int DOUT_PIN = 19;
 const int CLK_PIN = 18;
+const long THRESHOLD = 1000000;
 
 // For the buzzer
 const int BUZZER_PIN = 13;

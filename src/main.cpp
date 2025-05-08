@@ -8,9 +8,7 @@
 #include "Scale.h"
 #include "WebSocket.h"
 
-const long threshold = 1000000;
-
-Scale scale(DOUT_PIN, CLK_PIN, threshold);
+Scale scale(DOUT_PIN, CLK_PIN, THRESHOLD);
 Buzzer buzzer(BUZZER_PIN);
 Alarm alarms(true);
 Internet internet(SSID, PASSWORD, true);
