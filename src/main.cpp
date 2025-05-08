@@ -15,7 +15,9 @@ Internet internet(SSID, PASSWORD, true);
 NTP ntp(NTP_SERVER, GMT_OFFSET, true);
 WebSocket webSocket(WEB_SOCKET_IP, WEB_SOCKET_PORT, &ntp, &alarms, true);
 
-time_t lastSendRead = 0;
+unsigned long long lastSendRead = 0;
+long accumulatedRead = 0;
+uint8_t readCount = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -46,7 +48,18 @@ void loop() {
   scale.update();
   const long read = scale.getRead();
   ntp.update();
-  webSocket.sendScaleRead(read, millisEpochTime);
+
+  // Send read or accumulate it
+  if (millisEpochTime - SEND_READ_PERIOD > lastSendRead && readCount > 0) {
+    const long avgRead = accumulatedRead / readCount;
+    webSocket.sendScaleRead(avgRead, millisEpochTime);
+    lastSendRead = millisEpochTime;
+    accumulatedRead = 0;
+    readCount = 0;
+  } else {
+    accumulatedRead += read;
+    readCount += 1;
+  }
 
   AlarmUsefulInfo info = ntp.getAlarmUsefulInfo();
   bool alarmActive = alarms.isActive(info.dayIndex, info.localMinutes);

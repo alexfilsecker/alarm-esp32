@@ -10,6 +10,9 @@ const int BUZZER_PIN = 13;
 const int SDA_PIN = 21;
 const int SCL_PIN = 22;
 
+// For sending read
+const unsigned long long SEND_READ_PERIOD = 500; // ms
+
 // For the Internet
 const char *SSID = "WiFi FB 2.4";
 const char *PASSWORD = "alexander";
