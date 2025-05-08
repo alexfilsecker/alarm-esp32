@@ -20,34 +20,48 @@ long accumulatedRead = 0;
 uint8_t readCount = 0;
 
 void setup() {
+  // Serial setup
   Serial.begin(115200);
   while (!Serial) {
     continue;
   }
+
+  // Greeter
   Serial.println();
   Serial.println("  *********");
   Serial.println("  * ESP32 *");
   Serial.println("  *********\n\n");
 
+  // Setup without internet
   scale.setup();
-
   buzzer.setup();
+
+  // Connect to internet
   internet.connect();
   if (!internet.isConnected()) {
     buzzer.panicSound();
     ESP.restart();
     return;
   }
+
+  // Setup that need's internet
   ntp.setup();
   webSocket.setup();
 }
 
 void loop() {
+  // Update ntp
+  ntp.update(); // This should happen every minute or so
+
+  // Let websocket read new messages and do it's thing
   webSocket.loop();
+
+  // get millisEpochTime
   const unsigned long long millisEpochTime = ntp.getMillisUTCEpochTime();
+
+  // read in scale
   scale.update();
   const long read = scale.getRead();
-  ntp.update();
 
   // Send read or accumulate it
   if (millisEpochTime - SEND_READ_PERIOD > lastSendRead && readCount > 0) {
@@ -65,6 +79,7 @@ void loop() {
   bool alarmActive = alarms.isActive(info.dayIndex, info.localMinutes);
   bool scaleActive = scale.isOverThreshold;
 
+  // Logic for beeping
   if (webSocket.forceBeep) {
     buzzer.beep();
   } else {
