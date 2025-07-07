@@ -19,5 +19,5 @@ constexpr const char *PASSWORD = "alexander";
 constexpr const char *NTP_SERVER = "pool.ntp.org";
 const long GMT_OFFSET = -4 * 3600;
 
-constexpr const char *WEB_SOCKET_IP = "192.168.50.96";
+constexpr const char *WEB_SOCKET_IP = "192.168.50.146";
 const int WEB_SOCKET_PORT = 8000;

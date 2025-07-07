@@ -4,9 +4,9 @@
 #include <WebSocketsClient.h>
 #include <map>
 
-#include "Alarm.h"
-#include "NTP.h"
-#include "Scale.h"
+#include "Alarm.hpp"
+#include "NTP.hpp"
+#include "Scale.hpp"
 
 enum class ServerEvent {
   GMT_OFFSET,

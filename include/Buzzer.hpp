@@ -1,6 +1,6 @@
 #pragma once
 
-#include "verbose/BuzzerVerbose.h"
+#include "verbose/BuzzerVerbose.hpp"
 
 class Buzzer {
 private:

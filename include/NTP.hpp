@@ -1,5 +1,5 @@
 #pragma once
-#include "RealTimeClock.h"
+#include "RealTimeClock.hpp"
 #include <NTPClient.h>
 #include <WiFi.h>
 
