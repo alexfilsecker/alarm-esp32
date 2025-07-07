@@ -1,4 +1,4 @@
-#include "Scale.h"
+#include "Scale.hpp"
 
 Scale::Scale(int doutPin, int clkPin, long threshold)
     : doutPin(doutPin), clkPin(clkPin), threshold(threshold) {

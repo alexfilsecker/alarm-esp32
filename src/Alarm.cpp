@@ -1,4 +1,4 @@
-#include "Alarm.h"
+#include "Alarm.hpp"
 #include <Arduino.h>
 #include <cstring>
 #include <sstream>

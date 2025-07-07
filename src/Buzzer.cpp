@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "Buzzer.h"
+#include "Buzzer.hpp"
 
 Buzzer::Buzzer(int pin) : pin(pin), verbose(BuzzerVerbose(pin)) {}
 

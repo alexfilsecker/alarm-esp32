@@ -1,4 +1,4 @@
-#include "NTP.h"
+#include "NTP.hpp"
 
 NTP::NTP(const char *ntpServer, const long gmtOffset)
     : ntpServer(ntpServer), ntpUDP(), timeClient(ntpUDP, ntpServer) {}

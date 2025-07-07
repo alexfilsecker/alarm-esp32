@@ -1,5 +1,5 @@
-#include "WebSocket.h"
-#include "PayloadUtils.h"
+#include "WebSocket.hpp"
+#include "PayloadUtils.hpp"
 
 // Public
 WebSocket::WebSocket(const char *ip, const int port, NTP *ntp, Alarm *alarm)

@@ -1,12 +1,12 @@
 #include <Arduino.h>
 
-#include "Alarm.h"
-#include "Buzzer.h"
-#include "Constants.h"
-#include "Internet.h"
-#include "NTP.h"
-#include "Scale.h"
-#include "WebSocket.h"
+#include "Alarm.hpp"
+#include "Buzzer.hpp"
+#include "Constants.hpp"
+#include "Internet.hpp"
+#include "NTP.hpp"
+#include "Scale.hpp"
+#include "WebSocket.hpp"
 
 Scale scale(DOUT_PIN, CLK_PIN, THRESHOLD);
 Buzzer buzzer(BUZZER_PIN);
